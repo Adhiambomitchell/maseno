@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Freshers' guide · Maseno Guide{% endblock %}
+{% block head %}<script defer src="{{ url_for('static', filename='js/guide.js') }}"></script>{% endblock %}
+{% block body %}
+<div class="page-head"><h1>Freshers' guide</h1>
+  <p>Tick things off as you go. Your progress is saved to your account.</p></div>
+
+<section class="section">
+  <h2>Arrival checklist</h2>
+  <div class="progress"><div id="checkBar" style="width: {{ (done|length / checklist|length * 100)|round|int }}%"></div></div>
+  <p class="muted" style="margin-bottom:28px"><span id="checkCount">{{ done|length }}</span> of {{ checklist|length }} done</p>
+  {% for key, label in checklist %}
+  <label class="check {{ 'done' if key in done }}" style="margin:0 0 14px"><input type="checkbox" data-item="{{ key }}" {{ 'checked' if key in done }}><span>{{ label }}</span></label>
+  {% endfor %}
+</section>
+
+<section class="section">
+  <h2>Good to know</h2>
+  <div class="grid g3">
+    {% for icon, title, text in tips %}
+    <div class="card tip"><span class="em">{{ icon }}</span><h3>{{ title }}</h3><p class="muted" style="margin:0">{{ text }}</p></div>
+    {% endfor %}
+  </div>
+  <p style="margin-top:32px"><a class="btn ghost" href="https://www.maseno.ac.ke" target="_blank" rel="noopener">Official Maseno University website</a></p>
+</section>
+{% endblock %}

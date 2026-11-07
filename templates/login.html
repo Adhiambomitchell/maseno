@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Log in · Maseno Guide{% endblock %}
+{% block body %}
+<div class="auth-wrap"><form class="panel" method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <h1 style="font-size:2.2rem">Welcome back 👋</h1>
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required autocomplete="email">
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" required autocomplete="current-password">
+  <p style="margin-top:32px"><button class="btn" type="submit">Log in</button></p>
+  <p class="muted" style="margin:0">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+</form>
+{% if unverified_email %}
+<form class="panel" method="post" action="{{ url_for('resend_verification') }}" style="margin-top:28px">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <p>Didn't get the email?</p>
+  <input type="hidden" name="email" value="{{ unverified_email }}">
+  <button class="btn small lake" type="submit">Resend verification email</button>
+</form>
+{% endif %}
+</div>
+{% endblock %}

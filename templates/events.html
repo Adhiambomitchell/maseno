@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Events · Maseno Guide{% endblock %}
+{% block body %}
+<div class="page-head"><h1>Events for freshers</h1>
+  <p>Pick the ones that fit you and reserve a spot. You can cancel any time.</p></div>
+<div class="filter-row">
+  <a href="{{ url_for('events') }}" class="{{ 'on' if not cat }}">All</a>
+  {% for c in cats %}<a href="{{ url_for('events', cat=c) }}" class="{{ 'on' if cat == c }}">{{ c }}</a>{% endfor %}
+</div>
+{% if events %}
+<div class="event-stack">{% for e in events %}{% include "_event_card.html" %}{% endfor %}</div>
+{% else %}
+<div class="empty"><span class="em">📅</span><h3>No events here yet</h3><p class="muted">Try another category, or check back soon.</p></div>
+{% endif %}
+{% endblock %}

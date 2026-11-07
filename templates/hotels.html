@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Where to stay · Maseno Guide{% endblock %}
+{% block body %}
+<div class="page-head">
+  <h1>Where to stay</h1>
+  <p>Discover hotels, hostels, and guest houses near Maseno University.</p>
+</div>
+
+<div id="hotelStatus" class="muted" style="margin-bottom: 20px;">Finding accommodation options...</div>
+<div id="hotels" class="grid g2"></div>
+<div id="loadMoreSpinner" style="text-align: center; padding: 20px; display: none;">
+  <span class="muted">Loading more places...</span>
+</div>
+
+{% include "_maps_loader.html" %}
+<script src="{{ url_for('static', filename='js/hotels.js') }}"></script>
+{% endblock %}

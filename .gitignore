@@ -1,0 +1,10 @@
+.env
+.secret_key
+*.db
+venv/
+.venv/
+__pycache__/
+uploads/*
+papers/*
+!uploads/.gitkeep
+!papers/.gitkeep

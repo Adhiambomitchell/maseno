@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Home · Maseno Guide{% endblock %}
+{% block body %}
+<div class="page-head"><h1>Karibu, {{ g.user.name.split()[0] }} 👋</h1>
+  <p>Here is where you stand and what to do next.</p></div>
+
+{% if announcements %}
+<div class="section" style="margin-bottom:56px">
+  {% for a in announcements %}<div class="announce"><h3>📣 {{ a.title }}</h3><p>{{ a.body }}</p></div>{% endfor %}
+</div>
+{% endif %}
+
+<div class="section">
+  <h2>Your registration</h2>
+  <div class="card" style="margin-bottom:28px">
+    <h3>{{ done }} of {{ total }} documents uploaded · {{ approved }} approved</h3>
+    <div class="progress" role="progressbar" aria-valuenow="{{ done }}" aria-valuemin="0" aria-valuemax="{{ total }}"><div style="width: {{ (done / total * 100)|round|int }}%"></div></div>
+  </div>
+  {% if next_doc %}
+  <div class="next-step">
+    <span class="em">{{ next_doc.icon }}</span>
+    <div class="txt"><h2>Next: {{ next_doc.title }}</h2><p>Take the original to {{ next_doc.office }}.</p></div>
+    <div class="acts">
+      <a class="btn" href="{{ url_for('documents') }}#{{ next_doc.key }}">Upload it</a>
+      {% if place %}<a class="btn ghost" href="{{ url_for('campus_map') }}?loc={{ place.slug }}">Show me the way</a>{% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="next-step" style="background:var(--leaf)"><span class="em">🎉</span>
+    <div class="txt"><h2>All documents uploaded</h2><p>The Registrar's office will review them. Check Registration for approvals.</p></div></div>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>Explore</h2>
+  <div class="grid g3">
+    <a class="card tile t1" href="{{ url_for('campus_map') }}"><span class="big">🗺️</span><h3>Campus map</h3><p>Find lecture halls and offices, and get walking directions.</p><span class="go">Open the map</span></a>
+    <a class="card tile t2" href="{{ url_for('events') }}"><span class="big">🎉</span><h3>Events</h3><p>Orientation, fairs and sports days. Reserve your spot.</p><span class="go">See events</span></a>
+    <a class="card tile t3" href="{{ url_for('community') }}"><span class="big">💬</span><h3>WhatsApp groups</h3><p>Join your course, hostel and club groups.</p><span class="go">Find groups</span></a>
+    <a class="card tile t4" href="{{ url_for('hotels') }}"><span class="big">🏨</span><h3>Where to stay</h3><p>Hotels and guest houses near campus, from Google.</p><span class="go">Browse stays</span></a>
+    <a class="card tile t5" href="{{ url_for('papers') }}"><span class="big">📝</span><h3>Revision papers</h3><p>Past papers by course and unit code.</p><span class="go">Get papers</span></a>
+    <a class="card tile t6" href="{{ url_for('guide') }}"><span class="big">🧭</span><h3>Freshers' guide</h3><p>Checklist and tips. {{ ticks }} of {{ checklist_total }} ticked.</p><span class="go">Open the guide</span></a>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Coming up</h2>
+  {% if events %}
+  <div class="event-stack">
+    {% for e in events %}{% include "_event_card.html" %}{% endfor %}
+  </div>
+  <p style="margin-top:32px"><a class="btn ghost" href="{{ url_for('events') }}">See all events</a></p>
+  {% else %}
+  <div class="empty"><span class="em">📅</span><h3>No events yet</h3><p class="muted">New events will appear here.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

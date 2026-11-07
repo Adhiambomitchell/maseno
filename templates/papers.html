@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Revision papers · Maseno Guide{% endblock %}
+{% block body %}
+<div class="page-head"><h1>Revision papers</h1>
+  <p>Search past papers by title or unit code, or filter by course.</p></div>
+<form method="get" class="card" style="margin-bottom:48px">
+  <div class="form-grid">
+    <div><label for="q" style="margin-top:0">Search</label><input id="q" type="search" name="q" value="{{ q }}" placeholder="e.g. calculus or MAT 101"></div>
+    <div><label for="course" style="margin-top:0">Course</label>
+      <select id="course" name="course"><option value="">All courses</option>
+        {% for c in courses %}<option {{ 'selected' if c == course }}>{{ c }}</option>{% endfor %}</select></div>
+  </div>
+  <p style="margin:28px 0 0"><button class="btn lake" type="submit">Search papers</button></p>
+</form>
+{% if papers %}
+<div class="grid g3">
+  {% for p in papers %}
+  <div class="card"><span style="font-size:2.6rem">📄</span><h3 style="margin-top:10px">{{ p.title }}</h3>
+    <p class="muted">{{ p.course }}{% if p.unit_code %} · {{ p.unit_code }}{% endif %}{% if p.year %} · {{ p.year }}{% endif %}</p>
+    <a class="btn small green" href="{{ url_for('paper_file', pid=p.id) }}">Download</a></div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty"><span class="em">📝</span><h3>No papers found</h3>
+  <p class="muted">{% if q or course %}Try a different search or clear the course filter.{% else %}Papers appear here once the admin uploads them.{% endif %}</p></div>
+{% endif %}
+{% endblock %}

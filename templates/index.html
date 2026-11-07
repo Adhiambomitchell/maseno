@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="hero"><div class="in">
+  <div>
+    <h1>Karibu Maseno.</h1>
+    <p class="lead">Everything a first year needs in one friendly place: where to hand in documents, how to find your class, and who to meet.</p>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('register') }}">Create my account</a>
+      <a class="btn ghost" href="{{ url_for('login') }}">I already have one</a>
+    </div>
+  </div>
+  <svg class="equator" viewBox="0 0 480 360" role="img" aria-label="The sun rising over the Equator line at 0 degrees">
+    <circle cx="240" cy="210" r="130" fill="#F7A928"/>
+    <circle cx="240" cy="210" r="170" fill="none" stroke="#FFE3A6" stroke-width="3" stroke-dasharray="4 14" stroke-linecap="round"/>
+    <rect x="0" y="210" width="480" height="150" fill="#083F6E" opacity=".92"/>
+    <line x1="0" y1="210" x2="480" y2="210" stroke="#fff" stroke-width="4" stroke-dasharray="14 10"/>
+    <text x="240" y="262" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="64" font-weight="700" fill="#fff">0°</text>
+    <text x="240" y="300" text-anchor="middle" font-family="Nunito Sans,sans-serif" font-size="20" fill="#CFE6F7">You study on the Equator</text>
+  </svg>
+</div></section>
+
+<div class="land">
+  <div class="land-row"><div class="land-icon">📑</div><div>
+    <h2>Know exactly where to submit</h2>
+    <p>Upload your admission letter and other documents once. Each one tells you which office to visit and shows it on the map.</p></div></div>
+  <div class="land-row"><div class="land-icon">🗺️</div><div>
+    <h2>Never get lost on campus</h2>
+    <p>See every lecture hall, office and the library on a Google map, with walking directions from wherever you stand.</p></div></div>
+  <div class="land-row"><div class="land-icon">🎉</div><div>
+    <h2>Find your people</h2>
+    <p>Register for orientation events and join WhatsApp groups for your course, hostel and clubs.</p></div></div>
+  <div class="land-row"><div class="land-icon">📝</div><div>
+    <h2>Be ready for exams</h2>
+    <p>Download revision papers, plan your arrival with a checklist, and find a place to stay near campus.</p></div></div>
+</div>
+{% endblock %}

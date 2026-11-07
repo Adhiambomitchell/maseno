@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · Maseno Guide{% endblock %}
+{% block body %}
+<div class="auth-wrap"><div class="panel" style="text-align:center">
+  <div style="font-size:4rem">🧭</div>
+  <h1 style="font-size:2.2rem">{{ title }}</h1>
+  <p class="muted">{{ text }}</p>
+  <p style="margin-top:32px"><a class="btn" href="{{ url_for('index') }}">Back to home</a></p>
+</div></div>
+{% endblock %}

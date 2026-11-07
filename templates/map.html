@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Campus map · Maseno Guide{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+{% block body %}
+<div class="page-head"><h1>Campus map</h1>
+  <p>Maseno University Main Campus map powered by Geoapify and Leaflet. Pick a place, then choose "Walk me there" for directions from where you are.</p></div>
+
+<div class="map-split">
+  <aside class="panel-side" aria-label="Places">
+    <div class="chips" id="chips"></div>
+    <div id="placeList"></div>
+    <div id="directions" aria-live="polite"></div>
+  </aside>
+  <div id="map" role="application" aria-label="Interactive map of Maseno University"></div>
+</div>
+{% include "_maps_loader.html" %}
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+{% endblock %}

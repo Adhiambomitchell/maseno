@@ -1,0 +1,22 @@
+{% set full = e.capacity and e.taken >= e.capacity %}
+<article class="card event">
+  <div class="date-badge"><div class="d">{{ e.starts|dt('%d') }}</div><div class="m">{{ e.starts|dt('%b') }}</div></div>
+  <div>
+    <span class="tag">{{ e.category }}</span>
+    <h3 style="margin-top:10px">{{ e.title }}</h3>
+    <p class="meta">🕘 {{ e.starts|dt('%A, %I:%M %p') }} · 📍 {{ e.venue }}</p>
+    <p>{{ e.description }}</p>
+    <p class="muted" style="margin:0">{% if e.capacity %}{{ e.capacity - e.taken if e.capacity > e.taken else 0 }} spots left{% else %}Open to everyone{% endif %}</p>
+  </div>
+  <form method="post" action="{{ url_for('event_register', eid=e.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    {% if e.id in mine %}
+      <input type="hidden" name="action" value="cancel">
+      <p class="tag approved" style="margin-bottom:12px">You're registered ✓</p><br>
+      <button class="btn small ghost" type="submit">Cancel my spot</button>
+    {% elif full %}
+      <span class="tag full">Event full</span>
+    {% else %}
+      <button class="btn" type="submit">Register</button>
+    {% endif %}
+  </form>
+</article>

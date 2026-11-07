@@ -1,0 +1,10 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script id="maps-config" type="application/json">
+  {{ {"maps_key": maps_key, "campus_center": campus_center}|tojson }}
+</script>
+<script>
+  const mapsConfig = JSON.parse(document.getElementById("maps-config").textContent);
+  window.MAPS_KEY = mapsConfig.maps_key;
+  window.CAMPUS = mapsConfig.campus_center;
+</script>

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Admin · Maseno Guide{% endblock %}
+{% block body %}
+<h1 style="margin-bottom:32px">Admin desk</h1>
+<nav class="tabs" aria-label="Admin sections">
+  {% for key, label in tabs %}<a href="{{ url_for('admin_tab', tab=key) }}" class="{{ 'on' if tab == key }}">{{ label }}</a>{% endfor %}
+</nav>
+
+{% if tab == 'overview' %}
+<div class="grid g3" style="margin-bottom:64px">
+  <div class="card stat"><div class="n">{{ n_students }}</div>Students registered</div>
+  <div class="card stat"><div class="n">{{ n_pending }}</div>Documents to review</div>
+  <div class="card stat"><div class="n">{{ n_regs }}</div>Event registrations</div>
+  <div class="card stat"><div class="n">{{ n_groups }}</div>WhatsApp groups to approve</div>
+</div>
+<h2>Announcements</h2>
+<form class="card" method="post" action="{{ url_for('admin_announce') }}" style="max-width:720px;margin-bottom:40px"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label for="atitle" style="margin-top:0">Title</label><input id="atitle" name="title" type="text" required>
+  <label for="abody">Message</label><textarea id="abody" name="body"></textarea>
+  <p style="margin:28px 0 0"><button class="btn" type="submit">Post to dashboards</button></p>
+</form>
+{% for a in announcements %}
+<div class="announce" style="display:flex;gap:20px;align-items:center;justify-content:space-between">
+  <div><h3>{{ a.title }}</h3><p>{{ a.body }}</p></div>
+  <form method="post" action="{{ url_for('admin_announce_delete', aid=a.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small red">Delete</button></form>
+</div>{% endfor %}
+
+{% elif tab == 'students' %}
+<h2>Students</h2>
+<div class="table-scroll"><table>
+  <tr><th>Name</th><th>Email</th><th>Reg no.</th><th>Course</th><th>Docs</th><th>Joined</th></tr>
+  {% for s in students %}<tr><td>{{ s.name }}</td><td>{{ s.email }}</td><td>{{ s.reg_no or '' }}</td><td>{{ s.course or '' }}</td>
+    <td>{{ counts.get(s.id, 0) }}/{{ total }}</td><td>{{ s.created }}</td></tr>
+  {% else %}<tr><td colspan="6">No students yet.</td></tr>{% endfor %}
+</table></div>
+
+{% elif tab == 'documents' %}
+<h2>Document review</h2>
+<div class="table-scroll"><table>
+  <tr><th>Student</th><th>Document</th><th>File</th><th>Status</th><th>Review</th></tr>
+  {% for d in docs %}<tr>
+    <td>{{ d.student }}</td><td>{{ titles.get(d.doc_key, d.doc_key) }}</td>
+    <td><a href="{{ url_for('doc_file', doc_id=d.id) }}" target="_blank">{{ d.original }}</a></td>
+    <td><span class="tag {{ d.status }}">{{ d.status }}</span></td>
+    <td><form method="post" action="{{ url_for('admin_review', doc_id=d.id) }}" class="inline"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="text" name="note" placeholder="Note (optional)" aria-label="Review note">
+      <button class="btn small green" name="status" value="approved">Approve</button>
+      <button class="btn small red" name="status" value="rejected">Reject</button></form></td>
+  </tr>{% else %}<tr><td colspan="5">No documents uploaded yet.</td></tr>{% endfor %}
+</table></div>
+
+{% elif tab == 'events' %}
+<h2>Add an event</h2>
+<form class="card" method="post" action="{{ url_for('admin_event_add') }}" style="margin-bottom:56px"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <div><label for="et" style="margin-top:0">Title</label><input id="et" name="title" type="text" required></div>
+    <div><label for="ec" style="margin-top:0">Category</label><select id="ec" name="category">{% for c in event_cats %}<option>{{ c }}</option>{% endfor %}</select></div>
+    <div><label for="ed">Date</label><input id="ed" name="date" type="date" required></div>
+    <div><label for="etm">Time</label><input id="etm" name="time" type="time" required></div>
+    <div><label for="ev">Venue</label><input id="ev" name="venue" type="text"></div>
+    <div><label for="ecap">Capacity (0 = unlimited)</label><input id="ecap" name="capacity" type="number" min="0" value="0"></div>
+  </div>
+  <label for="edesc">Description</label><textarea id="edesc" name="description"></textarea>
+  <p style="margin:28px 0 0"><button class="btn" type="submit">Add event</button></p>
+</form>
+<h2>All events</h2>
+<p class="muted">The first events are samples to show how it looks. Delete them and add your real ones.</p>
+<div class="table-scroll"><table>
+  <tr><th>Event</th><th>When</th><th>Venue</th><th>Registered</th><th></th></tr>
+  {% for e in events %}<tr><td>{{ e.title }}<br><span class="tag">{{ e.category }}</span></td><td>{{ e.starts|dt }}</td><td>{{ e.venue }}</td>
+    <td>{{ e.taken }}{% if e.capacity %} / {{ e.capacity }}{% endif %}</td>
+    <td><form method="post" action="{{ url_for('admin_event_delete', eid=e.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small red">Delete</button></form></td></tr>
+  {% else %}<tr><td colspan="5">No events yet.</td></tr>{% endfor %}
+</table></div>
+
+{% elif tab == 'groups' %}
+<h2>Publish a WhatsApp group</h2>
+<form class="card" method="post" action="{{ url_for('admin_group_add') }}" style="margin-bottom:56px"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <div><label for="gn" style="margin-top:0">Group name</label><input id="gn" name="name" type="text" required></div>
+    <div><label for="gc" style="margin-top:0">Category</label><select id="gc" name="category">{% for c in group_cats %}<option>{{ c }}</option>{% endfor %}</select></div>
+  </div>
+  <label for="gl">Invite link</label><input id="gl" name="link" type="url" required placeholder="https://chat.whatsapp.com/...">
+  <label for="gd">Description</label><textarea id="gd" name="description"></textarea>
+  <p style="margin:28px 0 0"><button class="btn" type="submit">Publish group</button></p>
+</form>
+<h2>All groups</h2>
+<div class="table-scroll"><table>
+  <tr><th>Group</th><th>Category</th><th>Suggested by</th><th>Status</th><th></th></tr>
+  {% for gr in groups %}<tr><td>{{ gr.name }}<br><a href="{{ gr.link }}" target="_blank" rel="noopener noreferrer">Check link</a></td><td>{{ gr.category }}</td>
+    <td>{{ gr.who or 'Admin' }}</td><td><span class="tag {{ 'approved' if gr.status == 'approved' else 'pending' }}">{{ gr.status }}</span></td>
+    <td class="inline">
+      {% if gr.status == 'pending' %}<form method="post" action="{{ url_for('admin_group_action', gid=gr.id, action='approve') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small green">Approve</button></form>{% endif %}
+      <form method="post" action="{{ url_for('admin_group_action', gid=gr.id, action='delete') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small red">Delete</button></form></td></tr>
+  {% else %}<tr><td colspan="5">No groups yet.</td></tr>{% endfor %}
+</table></div>
+
+{% elif tab == 'papers' %}
+<h2>Add a revision paper</h2>
+<form class="card" method="post" action="{{ url_for('admin_add_paper') }}" enctype="multipart/form-data" style="margin-bottom:56px"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <div><label for="pt" style="margin-top:0">Title</label><input id="pt" name="title" type="text" required placeholder="Calculus I, end of semester"></div>
+    <div><label for="pc" style="margin-top:0">Course</label><input id="pc" name="course" type="text" placeholder="BSc Mathematics"></div>
+    <div><label for="pu">Unit code</label><input id="pu" name="unit_code" type="text"></div>
+    <div><label for="py">Year</label><input id="py" name="year" type="text" placeholder="2025"></div>
+  </div>
+  <label for="pf">File (PDF, Word or PowerPoint)</label><input id="pf" name="file" type="file" required accept=".pdf,.doc,.docx,.ppt,.pptx">
+  <p style="margin:28px 0 0"><button class="btn" type="submit">Add paper</button></p>
+</form>
+<h2>All papers</h2>
+<div class="table-scroll"><table>
+  <tr><th>Title</th><th>Course</th><th>Unit</th><th>Year</th><th></th></tr>
+  {% for p in papers %}<tr><td>{{ p.title }}</td><td>{{ p.course }}</td><td>{{ p.unit_code }}</td><td>{{ p.year }}</td>
+    <td><form method="post" action="{{ url_for('admin_delete_paper', pid=p.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small red">Delete</button></form></td></tr>
+  {% else %}<tr><td colspan="5">No papers yet.</td></tr>{% endfor %}
+</table></div>
+
+{% elif tab == 'places' %}
+<div class="setup">
+  <h3>Make the pins exact</h3>
+  <p>On the live map, Google looks up each place by name. If a pin is wrong, open Google Maps, right-click the exact spot, click the two numbers that appear to copy them, then paste them below as latitude and longitude and press Save pin. Saved pins are never overridden.</p>
+</div>
+<h2>Map places</h2>
+<div class="table-scroll"><table>
+  <tr><th>Place</th><th>Category</th><th>Latitude, longitude</th><th></th></tr>
+  {% for p in places %}<tr><td><b>{{ p.name }}</b><br><span class="muted">{{ 'Pinned by you' if p.verified else 'Using Google lookup' }}</span></td><td>{{ p.category }}</td>
+    <td><form method="post" action="{{ url_for('admin_place_pin', pid=p.id) }}" class="inline"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input name="lat" type="text" value="{{ p.lat }}" aria-label="Latitude"><input name="lng" type="text" value="{{ p.lng }}" aria-label="Longitude">
+      <button class="btn small lake">Save pin</button></form></td>
+    <td><form method="post" action="{{ url_for('admin_place_delete', pid=p.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small red">Delete</button></form></td></tr>{% endfor %}
+</table></div>
+<h2 style="margin-top:56px">Add a place</h2>
+<form class="card" method="post" action="{{ url_for('admin_place_add') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <div><label for="an" style="margin-top:0">Name</label><input id="an" name="name" type="text" required></div>
+    <div><label for="acat" style="margin-top:0">Category</label><select id="acat" name="category">
+      <option value="lecture">Lectures</option><option value="admin">Offices</option><option value="library">Library</option>
+      <option value="hostel">Hostels</option><option value="health">Health</option><option value="food">Food</option>
+      <option value="sports">Sports</option><option value="transport">Transport</option></select></div>
+    <div><label for="alat">Latitude</label><input id="alat" name="lat" type="text" required placeholder="-0.0048"></div>
+    <div><label for="alng">Longitude</label><input id="alng" name="lng" type="text" required placeholder="34.6005"></div>
+  </div>
+  <label for="adesc">Description</label><textarea id="adesc" name="description"></textarea>
+  <p style="margin:28px 0 0"><button class="btn" type="submit">Add place</button></p>
+</form>
+{% endif %}
+{% endblock %}

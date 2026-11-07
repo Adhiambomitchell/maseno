@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Registration · Maseno Guide{% endblock %}
+{% block body %}
+<div class="page-head"><h1>Registration</h1>
+  <p>Upload a scan of each document, then take the originals to the office shown. {{ done }} of {{ docs|length }} uploaded, {{ approved }} approved.</p></div>
+
+<div class="steps">
+  <div><b>1. Upload</b>Add a clear scan or photo.</div>
+  <div><b>2. Visit the office</b>Hand in the originals.</div>
+  <div><b>3. Get approved</b>The Registrar marks it approved.</div>
+</div>
+
+<div class="doc-stack">
+{% for d in docs %}
+  {% set up = by_key.get(d.key) %}
+  {% set pl = places.get(d.place) %}
+  <section class="card doc" id="{{ d.key }}">
+    <div>
+      <div class="head">
+        <span class="em">{{ d.icon }}</span>
+        <div><h3 style="margin:0">{{ d.title }}</h3><p class="muted" style="margin:6px 0 0">{{ d.desc }}</p></div>
+      </div>
+      <p style="margin:18px 0">{% if up %}<span class="tag {{ up.status }}">{{ up.status|capitalize }}</span>{% else %}<span class="tag missing">Not uploaded yet</span>{% endif %}</p>
+      <div class="where"><b>📍 Take the original to</b>{{ d.office }}
+        {% if pl %}<br><a href="{{ url_for('campus_map') }}?loc={{ pl.slug }}">Show on map and get directions</a>{% endif %}</div>
+    </div>
+    <div class="upload-box">
+      {% if up %}
+        <div>Uploaded {{ up.uploaded_at|dt }}<br><a href="{{ url_for('doc_file', doc_id=up.id) }}" target="_blank">{{ up.original }}</a></div>
+        {% if up.status == 'rejected' %}<div class="flash error" style="margin:0">Rejected{% if up.note %}: {{ up.note }}{% endif %}. Upload a corrected file.</div>{% endif %}
+      {% endif %}
+      <form method="post" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <input type="hidden" name="doc_key" value="{{ d.key }}">
+        <input type="file" name="file" accept=".pdf,.png,.jpg,.jpeg" required aria-label="Choose file for {{ d.title }}">
+        <button class="btn green small" type="submit">{{ 'Replace file' if up else 'Upload file' }}</button>
+      </form>
+      <span class="muted" style="font-size:.9rem">PDF, JPG or PNG, up to {{ max_mb }} MB.</span>
+    </div>
+  </section>
+{% endfor %}
+</div>
+{% endblock %}

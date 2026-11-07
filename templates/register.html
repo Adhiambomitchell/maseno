@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Join · Maseno Guide{% endblock %}
+{% block body %}
+<div class="auth-wrap"><form class="panel" method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <h1 style="font-size:2.2rem">Create your account 🎉</h1>
+  <p class="muted">Signing up enters you into the system.</p>
+  <label for="name">Full name</label>
+  <input id="name" name="name" type="text" required value="{{ form.get('name','') }}" autocomplete="name">
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required value="{{ form.get('email','') }}" autocomplete="email">
+  <label for="reg_no">Registration number (optional)</label>
+  <input id="reg_no" name="reg_no" type="text" value="{{ form.get('reg_no','') }}">
+  <label for="course">Course</label>
+  <input id="course" name="course" type="text" placeholder="e.g. BSc Computer Science" value="{{ form.get('course','') }}">
+  <label for="password">Password (at least 6 characters)</label>
+  <input id="password" name="password" type="password" minlength="6" required autocomplete="new-password">
+  <p style="margin-top:32px"><button class="btn" type="submit">Create account</button></p>
+  <p class="muted" style="margin:0">Already registered? <a href="{{ url_for('login') }}">Log in</a></p>
+</form></div>
+{% endblock %}
